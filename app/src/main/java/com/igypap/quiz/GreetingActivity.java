@@ -20,10 +20,11 @@ public class GreetingActivity extends AppCompatActivity {
     private Button mNextButton;
 
 
-    private int[] mChoices;
-
     private List<Question> mQuestions;
+
+    private int[] mChoices;
     private int mCurrentQuestion = 0;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -63,6 +64,23 @@ public class GreetingActivity extends AppCompatActivity {
         refreshView();
     }
 
+    //save actual state of the Activity before ex. rotating screen
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        mChoices[mCurrentQuestion] = mAnswers.getCheckedRadioButtonId();
+        outState.putInt("currentQuestion", mCurrentQuestion);
+        outState.putIntArray("choices", mChoices);
+    }
+
+    //restore saved Activity state after ex. rotating screen
+    @Override
+    protected void onRestoreInstanceState(Bundle savedInstanceState) {
+        super.onRestoreInstanceState(savedInstanceState);
+        mCurrentQuestion = savedInstanceState.getInt("currentQuestion", 0);
+        mChoices = savedInstanceState.getIntArray("choices");
+        refreshView();
+    }
 
     private void onNextClick() {
         if (mCurrentQuestion + 1 == mQuestions.size()) {
