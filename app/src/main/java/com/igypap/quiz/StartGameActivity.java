@@ -7,9 +7,15 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Random;
+
 public class StartGameActivity extends AppCompatActivity {
     private EditText mEditText;
     private Button mNextButton;
+    private IQuestionDatabase mQuestionDatabase = new RandomQuestionsDatabase();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -33,6 +39,18 @@ public class StartGameActivity extends AppCompatActivity {
         Intent nameIntent = new Intent(this, GreetingActivity.class);
         //startActivity(nameIntent); //uruchomimy nowe okno ale nie przekazemy parametru name!!!
         nameIntent.putExtra("name", name);
+
+
+        //losowanie pytan
+        List<Question> questions = mQuestionDatabase.getQuestions();
+        Random random = new Random();
+        while (questions.size() > 5) {
+            //usuwa losowy element z listy
+
+            questions.remove(random.nextInt(questions.size()));
+        }
+        Collections.shuffle(questions);
+        nameIntent.putExtra("questions", new ArrayList<>(questions));
         startActivity(nameIntent);
 
 

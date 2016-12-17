@@ -11,8 +11,49 @@
     tools:context="com.igypap.quiz.GreetingActivity">
 
     <TextView
-        android:id="@+id/greeting"
+        android:id="@+id/question"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
+        android:layout_height="wrap_content"
+        android:text="Przykładowe pytanie nr 1" />
+
+    <RadioGroup
+        android:id="@+id/answer_choice"
+        android:layout_below="@+id/question"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <RadioButton
+            android:id="@+id/answer_1"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Odpowiedz 1" />
+
+        <RadioButton
+            android:id="@+id/answer_2"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Odpowiedz 2" />
+
+        <RadioButton
+            android:id="@+id/answer_3"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Odpowiedz 3" />
+    </RadioGroup>
+
+    <Button
+        android:id="@+id/back"
+        android:layout_below="@+id/answer_choice"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Wróć" />
+
+    <Button
+        android:id="@+id/next"
+        android:layout_below="@+id/answer_choice"
+        android:layout_alignParentRight="true"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Dalej" />
 
 </RelativeLayout>
