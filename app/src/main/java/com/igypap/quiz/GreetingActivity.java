@@ -7,6 +7,7 @@ import android.widget.Button;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.util.List;
 
@@ -18,6 +19,7 @@ public class GreetingActivity extends AppCompatActivity {
     private RadioButton mAnswer3;
     private Button mBackButton;
     private Button mNextButton;
+    private RadioButton[] mRadioButtons;
 
 
     private List<Question> mQuestions;
@@ -44,10 +46,9 @@ public class GreetingActivity extends AppCompatActivity {
         mAnswer3 = (RadioButton) findViewById(R.id.answer_3);
         mBackButton = (Button) findViewById(R.id.back);
         mNextButton = (Button) findViewById(R.id.next);
-
+        mRadioButtons = new RadioButton[]{mAnswer1, mAnswer2, mAnswer3};
 
         mNextButton.setOnClickListener(new View.OnClickListener() {
-
             @Override
             public void onClick(View v) {
                 onNextClick();
@@ -55,13 +56,13 @@ public class GreetingActivity extends AppCompatActivity {
         });
 
         mBackButton.setOnClickListener(new View.OnClickListener() {
-
             @Override
             public void onClick(View v) {
                 onBackClick();
             }
         });
         refreshView();
+
     }
 
     //save actual state of the Activity before ex. rotating screen
@@ -83,12 +84,13 @@ public class GreetingActivity extends AppCompatActivity {
     }
 
     private void onNextClick() {
+        mChoices[mCurrentQuestion] = mAnswers.getCheckedRadioButtonId();
         if (mCurrentQuestion + 1 == mQuestions.size()) {
-            // TODO: 17.12.16
+            countResult();
             return;
         }
         //save the current answer
-        mChoices[mCurrentQuestion] = mAnswers.getCheckedRadioButtonId();
+
         mCurrentQuestion++;
         refreshView();
     }
@@ -109,7 +111,8 @@ public class GreetingActivity extends AppCompatActivity {
         mQuestion.setText(question.getQuestion());  //set the question text
         //set the answers in the radio buttons
         int index = 0;
-        for (RadioButton rb : new RadioButton[]{mAnswer1, mAnswer2, mAnswer3}) {
+
+        for (RadioButton rb : mRadioButtons) {
             //zamiast :
             //mAnswer1.setText(question.getAnswers().get(0));
             // mAnswer2.setText(question.getAnswers().get(1));
@@ -125,6 +128,32 @@ public class GreetingActivity extends AppCompatActivity {
             mAnswers.check(mChoices[mCurrentQuestion]);
 
         }
+
+
+    }
+
+    private void countResult() {
+        int correctAnswers = 0;
+        int questionsCount = mQuestions.size();
+
+        for (int i = 0; i < questionsCount; i++) {
+            int correctAnswerIndex = mQuestions.get(i).getCorrectAnswer();
+            int choiceRadioButtonId = mChoices[i];
+            int choiceIndex = -1;
+            for (int j = 0; j < mRadioButtons.length; j++) {
+                if (mRadioButtons[j].getId() == choiceRadioButtonId) {
+                    choiceIndex = j;
+                    break;
+                }
+            }
+            if (correctAnswerIndex == choiceIndex) {
+                correctAnswers++;
+            }
+        }
+        //show the result to the user
+        Toast.makeText(this,
+                String.format("Wynik: %d/%d", correctAnswers, questionsCount),
+                Toast.LENGTH_SHORT).show();
 
     }
 }
