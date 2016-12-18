@@ -3,8 +3,6 @@ package com.igypap.quiz;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
-import android.view.View;
-import android.widget.Button;
 import android.widget.EditText;
 
 import java.util.ArrayList;
@@ -12,28 +10,27 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Random;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
+import butterknife.OnClick;
+
 public class StartGameActivity extends AppCompatActivity {
-    private EditText mEditText;
-    private Button mNextButton;
+    @BindView(R.id.name_field)
+    EditText mEditText;
+
+
     private IQuestionDatabase mQuestionDatabase = new RandomQuestionsDatabase();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_start_game);
-        mEditText = (EditText) findViewById(R.id.name_field);
-        mNextButton = (Button) findViewById(R.id.next_button);
-
-        mNextButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                openNextScreen();
-            }
-        });
+        ButterKnife.bind(this);
     }
 
-    private void openNextScreen() {
-        //1. odczytac wpisany tekst
+    @OnClick(R.id.next_button)
+    void openNextScreen() {
+        //1. read user input text
         String name = mEditText.getText().toString();
         //2. otworzyc nowe okno przekazujac wpisany teskt
         Intent nameIntent = new Intent(this, GreetingActivity.class);
@@ -41,11 +38,11 @@ public class StartGameActivity extends AppCompatActivity {
         nameIntent.putExtra(GreetingActivity.EXTRA_NAME, name);
 
 
-        //losowanie pytan
+        //generate the random questions
         List<Question> questions = mQuestionDatabase.getQuestions();
         Random random = new Random();
         while (questions.size() > 5) {
-            //usuwa losowy element z listy
+            //delete random element from the list
 
             questions.remove(random.nextInt(questions.size()));
         }

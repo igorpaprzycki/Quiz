@@ -10,25 +10,31 @@ import android.widget.TextView;
 
 import java.util.List;
 
+import butterknife.BindView;
+import butterknife.BindViews;
+import butterknife.ButterKnife;
+import butterknife.OnClick;
+
 public class GreetingActivity extends AppCompatActivity {
     public static final String EXTRA_NAME = "name";
     public static final String EXTRA_QUESTIONS = "questions";
     public static final String CURRENT_QUESTION = "currentQuestion";
     public static final String CHOICES = "choices";
-    private TextView mQuestion;
-    private RadioGroup mAnswers;
-    private RadioButton mAnswer1;
-    private RadioButton mAnswer2;
-    private RadioButton mAnswer3;
-    private Button mBackButton;
-    private Button mNextButton;
-    private RadioButton[] mRadioButtons;
 
+    @BindView(R.id.question)
+    TextView mQuestion;
+    @BindView(R.id.answer_choice)
+    RadioGroup mAnswers;
+    @BindView(R.id.back)
+    Button mBackButton;
+    @BindView(R.id.next)
+    Button mNextButton;
+    @BindViews({R.id.answer_1, R.id.answer_2, R.id.answer_3})
+    List<RadioButton> mRadioButtons;
 
     private List<Question> mQuestions;
-
     private int[] mChoices;
-    private int mCurrentQuestion = 0;
+    private int mCurrentQuestion;
     private String mPlayerName;
 
 
@@ -36,37 +42,14 @@ public class GreetingActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_greeting);
-        mQuestion = (TextView) findViewById(R.id.question);
+        ButterKnife.bind(this);
 
-        //1. odczytanie parametru name i listy pytan
+        //1. read the name parameter and question list
         mPlayerName = getIntent().getStringExtra(EXTRA_NAME);
         mQuestions = (List<Question>) getIntent().getSerializableExtra(EXTRA_QUESTIONS);
         mChoices = new int[mQuestions.size()];
-        //2. wyswietlenie go na kontrolce text view
-        mQuestion = (TextView) findViewById(R.id.question);
-        mAnswers = (RadioGroup) findViewById(R.id.answer_choice);
-        mAnswer1 = (RadioButton) findViewById(R.id.answer_1);
-        mAnswer2 = (RadioButton) findViewById(R.id.answer_2);
-        mAnswer3 = (RadioButton) findViewById(R.id.answer_3);
-        mBackButton = (Button) findViewById(R.id.back);
-        mNextButton = (Button) findViewById(R.id.next);
-        mRadioButtons = new RadioButton[]{mAnswer1, mAnswer2, mAnswer3};
 
-        mNextButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                onNextClick();
-            }
-        });
-
-        mBackButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                onBackClick();
-            }
-        });
         refreshView();
-
     }
 
     //save actual state of the Activity before ex. rotating screen
@@ -87,23 +70,21 @@ public class GreetingActivity extends AppCompatActivity {
         refreshView();
     }
 
-    private void onNextClick() {
+    @OnClick(R.id.next)
+    void onNextClick() {
+        //save the current answer
         mChoices[mCurrentQuestion] = mAnswers.getCheckedRadioButtonId();
-        if (mCurrentQuestion + 1 == mQuestions.size()) {
+        boolean isLastQuestion = mCurrentQuestion + 1 == mQuestions.size();
+        if (isLastQuestion) {
             countResult();
             return;
         }
-        //save the current answer
-
         mCurrentQuestion++;
         refreshView();
     }
 
-    private void onBackClick() {
-        if (mCurrentQuestion - 1 < 0) {
-            // TODO: 17.12.16
-            return;
-        }
+    @OnClick(R.id.back)
+    void onBackClick() {
         //save current answer
         mChoices[mCurrentQuestion] = mAnswers.getCheckedRadioButtonId();
         mCurrentQuestion--;
@@ -117,10 +98,6 @@ public class GreetingActivity extends AppCompatActivity {
         int index = 0;
 
         for (RadioButton rb : mRadioButtons) {
-            //zamiast :
-            //mAnswer1.setText(question.getAnswers().get(0));
-            // mAnswer2.setText(question.getAnswers().get(1));
-            // mAnswer3.setText(question.getAnswers().get(2));
             rb.setText(question.getAnswers().get(index++));
         }
         //set the buttons visibility
@@ -132,8 +109,6 @@ public class GreetingActivity extends AppCompatActivity {
             mAnswers.check(mChoices[mCurrentQuestion]);
 
         }
-
-
     }
 
     private void countResult() {
@@ -144,8 +119,8 @@ public class GreetingActivity extends AppCompatActivity {
             int correctAnswerIndex = mQuestions.get(i).getCorrectAnswer();
             int choiceRadioButtonId = mChoices[i];
             int choiceIndex = -1;
-            for (int j = 0; j < mRadioButtons.length; j++) {
-                if (mRadioButtons[j].getId() == choiceRadioButtonId) {
+            for (int j = 0; j < mRadioButtons.size(); j++) {
+                if (mRadioButtons.get(j).getId() == choiceRadioButtonId) {
                     choiceIndex = j;
                     break;
                 }
@@ -154,25 +129,7 @@ public class GreetingActivity extends AppCompatActivity {
                 correctAnswers++;
             }
         }
-        //show the result to the user
-//        Toast.makeText(this,
-//                String.format("Wynik: %d/%d", correctAnswers, questionsCount),
-//                Toast.LENGTH_SHORT).show();
 
-//wyswietlenie okna dialogowego z podsumowaniem. Takie okno niestety przy obrocie znika:
-/*        AlertDialog dialog = new AlertDialog.Builder(this)
-                .setCancelable(false)
-                .setTitle("Wynik quizu")
-                .setMessage(String.format("Witaj %s ! Twój wynik to %d/%d !",
-                        mPlayerName, correctAnswers,questionsCount))
-                .setPositiveButton("OK", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        finish();
-                    }
-                })
-                .create();
-        dialog.show();*/
         QuizResultDialogFragment.createDialog(mPlayerName, correctAnswers, questionsCount)
                 .show(getSupportFragmentManager(), "");
 
