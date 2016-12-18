@@ -1,13 +1,14 @@
 package com.igypap.quiz;
 
+import android.content.DialogInterface;
 import android.os.Bundle;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.Button;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import java.util.List;
 
@@ -26,6 +27,7 @@ public class GreetingActivity extends AppCompatActivity {
 
     private int[] mChoices;
     private int mCurrentQuestion = 0;
+    private String mName;
 
 
     @Override
@@ -35,7 +37,7 @@ public class GreetingActivity extends AppCompatActivity {
         mQuestion = (TextView) findViewById(R.id.question);
 
         //1. odczytanie parametru name i listy pytan
-        String name = getIntent().getStringExtra("name");
+        mName = getIntent().getStringExtra("name");
         mQuestions = (List<Question>) getIntent().getSerializableExtra("questions");
         mChoices = new int[mQuestions.size()];
         //2. wyswietlenie go na kontrolce text view
@@ -151,9 +153,26 @@ public class GreetingActivity extends AppCompatActivity {
             }
         }
         //show the result to the user
-        Toast.makeText(this,
-                String.format("Wynik: %d/%d", correctAnswers, questionsCount),
-                Toast.LENGTH_SHORT).show();
+//        Toast.makeText(this,
+//                String.format("Wynik: %d/%d", correctAnswers, questionsCount),
+//                Toast.LENGTH_SHORT).show();
+
+//wyswietlenie okna dialogowego z podsumowaniem. Takie okno niestety przy obrocie znika:
+        AlertDialog dialog = new AlertDialog.Builder(this)
+                .setCancelable(false)
+                .setTitle("Wynik quizu")
+                .setMessage(String.format("Witaj %s ! Twój wynik to %d/%d !",
+                        mName, correctAnswers,questionsCount))
+                .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        finish();
+                    }
+                })
+                .create();
+        dialog.show();
+
+
 
     }
 }
