@@ -11,6 +11,10 @@ import android.widget.TextView;
 import java.util.List;
 
 public class GreetingActivity extends AppCompatActivity {
+    public static final String EXTRA_NAME = "name";
+    public static final String EXTRA_QUESTIONS = "questions";
+    public static final String CURRENT_QUESTION = "currentQuestion";
+    public static final String CHOICES = "choices";
     private TextView mQuestion;
     private RadioGroup mAnswers;
     private RadioButton mAnswer1;
@@ -35,8 +39,8 @@ public class GreetingActivity extends AppCompatActivity {
         mQuestion = (TextView) findViewById(R.id.question);
 
         //1. odczytanie parametru name i listy pytan
-        mPlayerName = getIntent().getStringExtra("name");
-        mQuestions = (List<Question>) getIntent().getSerializableExtra("questions");
+        mPlayerName = getIntent().getStringExtra(EXTRA_NAME);
+        mQuestions = (List<Question>) getIntent().getSerializableExtra(EXTRA_QUESTIONS);
         mChoices = new int[mQuestions.size()];
         //2. wyswietlenie go na kontrolce text view
         mQuestion = (TextView) findViewById(R.id.question);
@@ -70,16 +74,16 @@ public class GreetingActivity extends AppCompatActivity {
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
         mChoices[mCurrentQuestion] = mAnswers.getCheckedRadioButtonId();
-        outState.putInt("currentQuestion", mCurrentQuestion);
-        outState.putIntArray("choices", mChoices);
+        outState.putInt(CURRENT_QUESTION, mCurrentQuestion);
+        outState.putIntArray(CHOICES, mChoices);
     }
 
     //restore saved Activity state after ex. rotating screen
     @Override
     protected void onRestoreInstanceState(Bundle savedInstanceState) {
         super.onRestoreInstanceState(savedInstanceState);
-        mCurrentQuestion = savedInstanceState.getInt("currentQuestion", 0);
-        mChoices = savedInstanceState.getIntArray("choices");
+        mCurrentQuestion = savedInstanceState.getInt(CURRENT_QUESTION, 0);
+        mChoices = savedInstanceState.getIntArray(CHOICES);
         refreshView();
     }
 

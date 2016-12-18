@@ -38,7 +38,7 @@ public class StartGameActivity extends AppCompatActivity {
         //2. otworzyc nowe okno przekazujac wpisany teskt
         Intent nameIntent = new Intent(this, GreetingActivity.class);
         //startActivity(nameIntent); //uruchomimy nowe okno ale nie przekazemy parametru name!!!
-        nameIntent.putExtra("name", name);
+        nameIntent.putExtra(GreetingActivity.EXTRA_NAME, name);
 
 
         //losowanie pytan
@@ -50,7 +50,7 @@ public class StartGameActivity extends AppCompatActivity {
             questions.remove(random.nextInt(questions.size()));
         }
         Collections.shuffle(questions);
-        nameIntent.putExtra("questions", new ArrayList<>(questions));
+        nameIntent.putExtra(GreetingActivity.EXTRA_QUESTIONS, new ArrayList<>(questions));
         startActivity(nameIntent);
 
 
