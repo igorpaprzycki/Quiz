@@ -1,8 +1,6 @@
 package com.igypap.quiz;
 
-import android.content.DialogInterface;
 import android.os.Bundle;
-import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.Button;
@@ -27,7 +25,7 @@ public class GreetingActivity extends AppCompatActivity {
 
     private int[] mChoices;
     private int mCurrentQuestion = 0;
-    private String mName;
+    private String mPlayerName;
 
 
     @Override
@@ -37,7 +35,7 @@ public class GreetingActivity extends AppCompatActivity {
         mQuestion = (TextView) findViewById(R.id.question);
 
         //1. odczytanie parametru name i listy pytan
-        mName = getIntent().getStringExtra("name");
+        mPlayerName = getIntent().getStringExtra("name");
         mQuestions = (List<Question>) getIntent().getSerializableExtra("questions");
         mChoices = new int[mQuestions.size()];
         //2. wyswietlenie go na kontrolce text view
@@ -158,11 +156,11 @@ public class GreetingActivity extends AppCompatActivity {
 //                Toast.LENGTH_SHORT).show();
 
 //wyswietlenie okna dialogowego z podsumowaniem. Takie okno niestety przy obrocie znika:
-        AlertDialog dialog = new AlertDialog.Builder(this)
+/*        AlertDialog dialog = new AlertDialog.Builder(this)
                 .setCancelable(false)
                 .setTitle("Wynik quizu")
                 .setMessage(String.format("Witaj %s ! Twój wynik to %d/%d !",
-                        mName, correctAnswers,questionsCount))
+                        mPlayerName, correctAnswers,questionsCount))
                 .setPositiveButton("OK", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
@@ -170,8 +168,9 @@ public class GreetingActivity extends AppCompatActivity {
                     }
                 })
                 .create();
-        dialog.show();
-
+        dialog.show();*/
+        QuizResultDialogFragment.createDialog(mPlayerName, correctAnswers, questionsCount)
+                .show(getSupportFragmentManager(), "");
 
 
     }
